@@ -4,6 +4,7 @@ pipeline {
 
     environment {
         def pom = readMavenPom()
+        echo "POM = ${pom}"
         def abc = 2
     }
 
@@ -12,9 +13,9 @@ pipeline {
             steps {
                 dir('spring-jenkins-pipeline') {
                     script {
-                        echo "env = $env"
+                        echo "env = ${env.pom}"
                         echo "abc = ${abc}"
-                        echo "This is the groupId: ${env.pom.groupId}"
+                        echo "This is the groupId: ${pom}"
                         if (isUnix()) {
                             sh "./mvnw clean install -DskipTests"
                         } else {
