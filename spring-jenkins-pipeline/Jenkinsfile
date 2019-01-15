@@ -2,11 +2,16 @@ pipeline {
 
     agent any
 
+    environment {
+        def pom = readMavenPom()
+    }
+
     stages {
         stage("Compilation") {
             steps {
                 dir('spring-jenkins-pipeline') {
                     script {
+                        echo "${pom.groupId}"
                         if (isUnix()) {
                             sh "./mvnw clean install -DskipTests"
                         } else {
