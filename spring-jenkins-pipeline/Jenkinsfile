@@ -11,6 +11,7 @@ pipeline {
             steps {
                 dir('spring-jenkins-pipeline') {
                     script {
+                        pom = readMavenPom()
                         echo "${pom.groupId}"
                         if (isUnix()) {
                             sh "./mvnw clean install -DskipTests"
