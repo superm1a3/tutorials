@@ -3,7 +3,7 @@ pipeline {
     agent any
 
     environment {
-        def pom = readMavenPom()
+        pom = readMavenPom()
         def abc = 2
     }
 
@@ -15,6 +15,9 @@ pipeline {
                         echo "env = ${env.pom}"
                         echo "abc = ${abc}"
                         echo "This is the groupId: ${pom}"
+
+                        def localPom = readMavenPom()
+                        echo "localPom = ${localPom.groupId}"
                         if (isUnix()) {
                             sh "./mvnw clean install -DskipTests"
                         } else {
