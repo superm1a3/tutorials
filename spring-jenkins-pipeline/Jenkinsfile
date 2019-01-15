@@ -4,7 +4,6 @@ pipeline {
 
     environment {
         def pom = readMavenPom()
-        echo "POM = ${pom}"
         def abc = 2
     }
 
