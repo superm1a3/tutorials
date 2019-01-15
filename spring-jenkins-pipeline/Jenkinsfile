@@ -17,7 +17,7 @@ pipeline {
                         echo "This is the groupId: ${pom}"
 
                         def localPom = readMavenPom()
-                        echo "localPom = ${localPom.getGroupId()}"
+                        echo "localPom = $localPom"
                         if (isUnix()) {
                             sh "./mvnw clean install -DskipTests"
                         } else {
