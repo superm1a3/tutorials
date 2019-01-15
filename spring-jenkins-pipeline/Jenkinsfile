@@ -6,10 +6,12 @@ pipeline {
         stage("Compilation") {
             steps {
                 dir('spring-jenkins-pipeline') {
-                    if (isUnix()) {
-                        sh "./mvnw clean install -DskipTests"
-                    } else {
-                        bat "./mvnw.cmd clean install -DskipTests"
+                    script {
+                        if (isUnix()) {
+                            sh "./mvnw clean install -DskipTests"
+                        } else {
+                            bat "./mvnw.cmd clean install -DskipTests"
+                        }
                     }
                 }
             }
@@ -19,17 +21,19 @@ pipeline {
             stage("Running unit tests") {
                 steps {
                     dir('spring-jenkins-pipeline') {
-                        try {
-                            if (isUnix()) {
-                                sh "./mvnw test -Punit"
-                            } else {
-                                bat "./mvnw.cmd test -Punit"
+                        script {
+                            try {
+                                if (isUnix()) {
+                                    sh "./mvnw test -Punit"
+                                } else {
+                                    bat "./mvnw.cmd test -Punit"
+                                }
+                            } catch (err) {
+                                step([$class: 'JUnitResultArchiver', testResults: '**/target/surefire-reports/TEST-*UnitTest.xml'])
+                                throw err
                             }
-                        } catch (err) {
-                            step([$class: 'JUnitResultArchiver', testResults: '**/target/surefire-reports/TEST-*UnitTest.xml'])
-                            throw err
+                            junit '**/target/surefire-reports/TEST-*UnitTest.xml'
                         }
-                        junit '**/target/surefire-reports/TEST-*UnitTest.xml'
                     }
                 }
             }
