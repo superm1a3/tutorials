@@ -1,35 +1,36 @@
-node {
-//    stage 'Clone the project'
-//    git 'https://github.com/superm1a3/tutorials.git'
+pipeline {
 
-    dir('spring-jenkins-pipeline') {
-        stage("Compilation and Analysis") {
-            parallel 'Compilation': {
-                if (isUnix()) {
-                    sh "./mvnw clean install -DskipTests"
-                } else {
-                    bat "./mvnw.cmd clean install -DskipTests"
-                }
-            }, 'Static Analysis': {
-                stage("Checkstyle") {
+    agent any
+
+    stages {
+        dir('spring-jenkins-pipeline') {
+            stage("Compilation and Analysis") {
+                parallel 'Compilation': {
                     if (isUnix()) {
-                        sh "./mvnw checkstyle:checkstyle"
+                        sh "./mvnw clean install -DskipTests"
                     } else {
-                        bat "./mvnw.cmd checkstyle:checkstyle"
+                        bat "./mvnw.cmd clean install -DskipTests"
                     }
-                     step([$class: 'CheckStylePublisher',
-                          canRunOnFailed: true,
-                          defaultEncoding: '',
-                          healthy: '100',
-                          pattern: '**/target/checkstyle-result.xml',
-                          unHealthy: '90',
-                          useStableBuildAsReference: true
+                }, 'Static Analysis': {
+                    stage("Checkstyle") {
+                        if (isUnix()) {
+                            sh "./mvnw checkstyle:checkstyle"
+                        } else {
+                            bat "./mvnw.cmd checkstyle:checkstyle"
+                        }
+                        step([$class                   : 'CheckStylePublisher',
+                              canRunOnFailed           : true,
+                              defaultEncoding          : '',
+                              healthy                  : '100',
+                              pattern                  : '**/target/checkstyle-result.xml',
+                              unHealthy                : '90',
+                              useStableBuildAsReference: true
                         ])
+                    }
                 }
             }
-        }
 
-        stage("Tests and Deployment") {
+            stage("Tests and Deployment") {
                 stage("Running unit tests") {
                     try {
                         if (isUnix()) {
@@ -37,7 +38,7 @@ node {
                         } else {
                             bat "./mvnw.cmd test -Punit"
                         }
-                    } catch(err) {
+                    } catch (err) {
                         step([$class: 'JUnitResultArchiver', testResults: '**/target/surefire-reports/TEST-*UnitTest.xml'])
                         throw err
                     }
@@ -45,15 +46,16 @@ node {
                     junit '**/target/surefire-reports/TEST-*UnitTest.xml'
                 }
 
-            // stage("Staging") {
-            //     withEnv(['JENKINS_NODE_COOKIE=dontkill']) {
-            //         if (isUnix()) {
-            //             sh 'nohup ./mvnw spring-boot:run -Dserver.port=8989 &'
-            //         } else {
-            //             bat 'start ./mvnw.cmd spring-boot:run -Dserver.port=8989'
-            //         }
-            //     }
-            // }
+                // stage("Staging") {
+                //     withEnv(['JENKINS_NODE_COOKIE=dontkill']) {
+                //         if (isUnix()) {
+                //             sh 'nohup ./mvnw spring-boot:run -Dserver.port=8989 &'
+                //         } else {
+                //             bat 'start ./mvnw.cmd spring-boot:run -Dserver.port=8989'
+                //         }
+                //     }
+                // }
+            }
         }
     }
 }
