@@ -18,7 +18,7 @@ pipeline {
 
                         def localPom = readMavenPom()
                         echo "localPom = $localPom"
-                        echo "${localPom.getClass()}"
+                        echo "${localPom.id}"
                         if (isUnix()) {
                             sh "./mvnw clean install -DskipTests"
                         } else {
