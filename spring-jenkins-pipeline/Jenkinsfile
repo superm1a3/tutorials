@@ -3,58 +3,35 @@ pipeline {
     agent any
 
     stages {
-        dir('spring-jenkins-pipeline') {
-            stage("Compilation and Analysis") {
-                parallel 'Compilation': {
+        stage("Compilation") {
+            steps {
+                dir('spring-jenkins-pipeline') {
                     if (isUnix()) {
                         sh "./mvnw clean install -DskipTests"
                     } else {
                         bat "./mvnw.cmd clean install -DskipTests"
                     }
-                }, 'Static Analysis': {
-                    stage("Checkstyle") {
-                        if (isUnix()) {
-                            sh "./mvnw checkstyle:checkstyle"
-                        } else {
-                            bat "./mvnw.cmd checkstyle:checkstyle"
-                        }
-                        step([$class                   : 'CheckStylePublisher',
-                              canRunOnFailed           : true,
-                              defaultEncoding          : '',
-                              healthy                  : '100',
-                              pattern                  : '**/target/checkstyle-result.xml',
-                              unHealthy                : '90',
-                              useStableBuildAsReference: true
-                        ])
-                    }
                 }
             }
+        }
 
-            stage("Tests and Deployment") {
-                stage("Running unit tests") {
-                    try {
-                        if (isUnix()) {
-                            sh "./mvnw test -Punit"
-                        } else {
-                            bat "./mvnw.cmd test -Punit"
+        stage("Tests and Deployment") {
+            stage("Running unit tests") {
+                steps {
+                    dir('spring-jenkins-pipeline') {
+                        try {
+                            if (isUnix()) {
+                                sh "./mvnw test -Punit"
+                            } else {
+                                bat "./mvnw.cmd test -Punit"
+                            }
+                        } catch (err) {
+                            step([$class: 'JUnitResultArchiver', testResults: '**/target/surefire-reports/TEST-*UnitTest.xml'])
+                            throw err
                         }
-                    } catch (err) {
-                        step([$class: 'JUnitResultArchiver', testResults: '**/target/surefire-reports/TEST-*UnitTest.xml'])
-                        throw err
+                        junit '**/target/surefire-reports/TEST-*UnitTest.xml'
                     }
-                    //step([$class: 'JUnitResultArchiver', testResults: '**/target/surefire-reports/TEST-*UnitTest.xml'])
-                    junit '**/target/surefire-reports/TEST-*UnitTest.xml'
                 }
-
-                // stage("Staging") {
-                //     withEnv(['JENKINS_NODE_COOKIE=dontkill']) {
-                //         if (isUnix()) {
-                //             sh 'nohup ./mvnw spring-boot:run -Dserver.port=8989 &'
-                //         } else {
-                //             bat 'start ./mvnw.cmd spring-boot:run -Dserver.port=8989'
-                //         }
-                //     }
-                // }
             }
         }
     }
