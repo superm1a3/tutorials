@@ -45,8 +45,8 @@ pipeline {
 
         stage("Code analysis") {
             steps {
-                dir(spring-jenkins-pipeline) {
-                    withSonarQubeEnv('sonarqube') {
+                dir('spring-jenkins-pipeline') {
+                    withSonarQubeEnv('Local SonarQube') {
                         sh "./mvnw sonar:sonar"
                     }
                 }
