@@ -18,7 +18,7 @@ pipeline {
 
                         def localPom = readMavenPom()
                         echo "localPom = $localPom"
-                        echo "${localPom.toString()}"
+                        echo "${localPom.description}"
                         if (isUnix()) {
                             sh "./mvnw clean install -DskipTests"
                         } else {
