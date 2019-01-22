@@ -3,22 +3,16 @@ pipeline {
     agent any
 
     environment {
-        pom = readMavenPom()
-        def abc = 3
+        POM = readMavenPom()
     }
 
     stages {
         stage("Compilation") {
             steps {
                 dir('spring-jenkins-pipeline') {
-                    script {
-                        echo "env = ${env.pom}"
-                        echo "abc = ${abc}"
-                        echo "This is the groupId: ${pom}"
+                    echo "version = ${POM.version}"
 
-                        def localPom = readMavenPom()
-                        echo "localPom = $localPom"
-                        echo "${localPom.description}"
+                    script {
                         if (isUnix()) {
                             sh "./mvnw clean install -DskipTests"
                         } else {
