@@ -42,5 +42,15 @@ pipeline {
                 }
             }
         }
+
+        stage("Code analysis") {
+            steps {
+                dir(spring-jenkins-pipeline) {
+                    withSonarQubeEnv('sonarqube') {
+                        sh "./mvnw sonar:sonar"
+                    }
+                }
+            }
+        }
     }
 }
