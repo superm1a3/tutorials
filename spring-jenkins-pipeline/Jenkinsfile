@@ -10,7 +10,7 @@ pipeline {
         stage("Compilation") {
             steps {
                 dir('spring-jenkins-pipeline') {
-                    echo "version = ${POM.version}"
+                    echo "version = ${POM}"
 
                     script {
                         if (isUnix()) {
