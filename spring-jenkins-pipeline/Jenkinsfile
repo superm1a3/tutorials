@@ -43,7 +43,7 @@ pipeline {
             }
         }
 
-        stage("Code analysis") {
+        stage("Code analysis - Sonar") {
             steps {
                 dir('spring-jenkins-pipeline') {
                     withSonarQubeEnv('Local SonarQube') {
