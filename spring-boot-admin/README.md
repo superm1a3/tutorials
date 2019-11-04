@@ -23,4 +23,5 @@ and the mail configuration from application.properties
 
 ### Relevant Articles: 
 
-- [A Guide to Spring Boot Admin](http://www.baeldung.com/spring-boot-admin)
+- [A Guide to Spring Boot Admin](https://www.baeldung.com/spring-boot-admin)
+- [Changing the Logging Level at the Runtime for a Spring Boot Application](https://www.baeldung.com/spring-boot-changing-log-level-at-runtime)
